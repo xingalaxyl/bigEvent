@@ -138,9 +138,12 @@
       user.edituserinfo({
         data: fd,
         callback: function(res) {
-          console.log(res);
+          // console.log(res);
+          if(res.code === 200) {
+            parent.location.href = './login.html';
+          }
         }
-      })
+      });
     });
 
   </script>
