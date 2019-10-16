@@ -115,12 +115,12 @@
     // 判断点击提交按钮，提交form表单内容
     $('#submit').on('click', function () {
       var fd = new FormData($('#myForm')[0]);
-      console.log(fd.get('username'))
-      console.log(fd.get('nickname'))
-      console.log(fd.get('password'))
-      console.log(fd.get('email'))
+      // console.log(fd.get('username'))
+      // console.log(fd.get('nickname'))
+      // console.log(fd.get('password'))
+      // console.log(fd.get('email'))
 
-      console.log(fd.get('user_pic'));
+      // console.log(fd.get('user_pic'));
       // console.log(fd)
       if (
         fd.get('username').trim() === '' ||
@@ -146,6 +146,15 @@
       });
     });
 
+
+
+    // 本地图片预览
+    $('#user_pic').on('change', function() {
+      // 获取文件信息
+      var tempFile = this.files[0];
+      var tempSrc = URL.createObjectURL(tempFile);
+      $('#avctor').prop('src', tempSrc);
+    });
   </script>
 </body>
 
