@@ -31,8 +31,8 @@
             </select>
             <select id="selStatus" name="" class="form-control input-sm">
               <option value="">所有状态</option>
-              <option >草稿</option>
-              <option >已发布</option>
+              <option>草稿</option>
+              <option>已发布</option>
             </select>
             <button id="btnSearch" class="btn btn-default btn-sm">筛选</button>
           </form>
@@ -267,6 +267,8 @@
 
     </div>
   </div>
+  <script src="./js/jquery.twbsPagination.min.js"></script>
+  <!-- <ul id="pagination" class="pagination-sm"></ul> -->
 
   <script>
     // 设置左侧菜单
@@ -317,15 +319,14 @@
   </script>
 
   <script>
+
+    // 记录当前页面
+    var newPage = 1;
+    var myTotalPage;
+
+
     // 展示文章列表信息
-    $.ajax({
-      url: 'http://localhost:8000/admin/search',
-      success: function (res) {
-        console.log(res);
-        var htmlStr = template('article', res);
-        $('#tbody').html(htmlStr);
-      }
-    });
+    getArticle();
 
     // 修改类别信息
     article.getCate({
@@ -340,24 +341,70 @@
     // --- 点击筛选按钮，进行筛选功能 ---
     $('#btnSearch').on('click', function (e) {
       e.preventDefault();
-      var type = $('#selCategory').val();
-      var state = $('#selStatus').val();
-      console.log(type,state);
+      // console.log(type, state);
+      newPage = 1;
+      myTotalPage = 0;
+      getArticle();
+    });
+
+    // 封装一个获取文章信息的方法
+    function getArticle() {
       $.ajax({
         url: 'http://localhost:8000/admin/search',
         data: {
-          type: type,
-          state: state,
+          type: $('#selCategory').val(),
+          state: $('#selStatus').val(),
+          page: newPage
         },
         success: function (res) {
-          console.log(res);
-          var htmlStr = template('article', res);
-          $('#tbody').html(htmlStr);
+          // console.log(res);
+          if (res.code === 200) {
+            var htmlStr = template('article', res);
+            $('#tbody').html(htmlStr);
+
+            // 通过获取的页数生成新的分页
+            var totalPage = res.totalPage;
+
+
+            if (totalPage === myTotalPage) {
+              // - 如果上一次和当前的总页数一致，同时上一次又点击了除1以外的其他页码
+              //   - 会导致页码无法更新为1，所以就不进行改进了
+              return;
+            }
+            myTotalPage = totalPage;
+            // --- 设置分页项 ---
+            // $('.pagination').twbsPagination('destroy');
+            $('.pagination').twbsPagination('destroy');
+            $('.pagination').twbsPagination({
+              first: '首页',
+              prev: '上一页',
+              next: '下一页',
+              last: '尾页',
+              totalPages: myTotalPage,
+              visiblePages: 7,
+              onPageClick: function (event, page) {
+                // $('#page-content').text('Page ' + page);
+                newPage = page;
+                getArticle();
+                console.log(newPage);
+              }
+            });
+          }
+
+
         }
       });
-    });
+    }
+
+
+
+
+
+
 
   </script>
+
+
 
 
 </body>
